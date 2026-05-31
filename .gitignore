@@ -39,3 +39,4 @@ yarn-error.log*
 demo/recordings/raw/
 demo/recordings/working/
 *.api-key
+demo/video/out/
