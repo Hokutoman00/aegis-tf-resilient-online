@@ -16,6 +16,13 @@
 // fail-open for input rate-limit-only guards (don't block users from
 // hitting their own agent).
 
+import {
+  type ListSpansResult,
+  type ListSpansTransport,
+  fetchListSpans,
+  unavailableResult,
+} from './listspans-fetcher.js';
+
 export type GuardrailDecision = 'allow' | 'block' | 'redact' | 'flag';
 export type GuardrailStage = 'input' | 'tool_args' | 'tool_result' | 'output';
 
@@ -160,3 +167,17 @@ export function applyFailClosedContract(
   // Input stage is fail-open (don't lock users out of their own agent)
   return report;
 }
+
+// C3 — On a Bedrock GuardrailIntervention, fetch the per-policy
+// assessment from ListSpans and produce a Receipt-embedded record.
+// If transport is undefined (running outside AWS), returns an
+// unavailable record so the Receipt still attests intervention happened.
+export async function onBedrockGuardrailIntervention(
+  spanId: string,
+  transport?: ListSpansTransport,
+): Promise<ListSpansResult> {
+  if (!transport) return unavailableResult(spanId);
+  return fetchListSpans(spanId, transport);
+}
+
+export type { ListSpansResult } from './listspans-fetcher.js';

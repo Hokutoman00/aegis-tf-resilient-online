@@ -2,12 +2,21 @@
 
 export type ProviderOutcome = 'success' | 'error' | 'canceled' | 'timeout';
 
+export type BedrockEndpointKind = 'runtime' | 'mantle' | 'unknown';
+export type BedrockThrottleKind = 'token_bucket' | 'request_quota' | 'unknown';
+
 export interface ProviderError {
   status?: number;
   type?: string;
   code?: string;
   message_class?: string; // L4-normalized class, e.g., 'credit_balance_too_low'
   raw_message?: string;
+  // Bedrock endpoint split (AWS 2026-05-27 change).
+  endpoint_kind?: BedrockEndpointKind;
+  // Bedrock throttle classification (token-bucket → L3 backoff, request-quota → L4 swap).
+  throttle_kind?: BedrockThrottleKind;
+  // Parsed `Retry-After` header (seconds), if present.
+  retry_after_s?: number;
 }
 
 export interface ProviderTry {

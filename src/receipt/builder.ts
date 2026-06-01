@@ -7,7 +7,18 @@ import type { HedgeRecord } from '../aegis/l0-hedge.js';
 import type { L4Match } from '../aegis/l4-semantic.js';
 import type { L5ContractRecord } from '../aegis/l5-contract.js';
 import type { L6ChaosRecord } from '../aegis/l6-chaos.js';
+import type { ListSpansResult } from '../aegis/listspans-fetcher.js';
 import type { LayerFired, ProviderTry, TFHealthRecord } from '../aegis/types.js';
+
+// C4 — MCP transport attestation.
+export interface MCPTransportRecord {
+  transport: 'stdio' | 'streamable_http' | 'sse' | 'unknown';
+  origin?: string;
+  origin_pin?: string;
+  pin_status?: 'first_use' | 'matched' | 'mismatch_refused' | 'na';
+  quarantine_decision: 'allowed' | 'refused';
+  quarantine_reason?: string;
+}
 
 export interface ReceiptV0 {
   version: 'aegis-v3.0';
@@ -22,6 +33,10 @@ export interface ReceiptV0 {
   l5_contract?: L5ContractRecord;
   l6_chaos?: L6ChaosRecord;
   tf_health?: TFHealthRecord;
+  // C3 — Bedrock per-policy guardrail assessment(s) via ListSpans.
+  bedrock_guardrail_assessment?: ListSpansResult[];
+  // C4 — MCP transport quarantine attestation(s).
+  mcp_transport?: MCPTransportRecord[];
 }
 
 export interface ReceiptDraft {
@@ -43,6 +58,8 @@ export class ReceiptBuilder {
   private l5_contract: L5ContractRecord | undefined;
   private l6_chaos: L6ChaosRecord | undefined;
   private tf_health: TFHealthRecord = { reachable: true, bypass_used: false };
+  private readonly bedrock_guardrail_assessment: ListSpansResult[] = [];
+  private readonly mcp_transport: MCPTransportRecord[] = [];
 
   constructor(draft: ReceiptDraft = {}) {
     this.request_id = draft.request_id ?? ulid();
@@ -99,6 +116,16 @@ export class ReceiptBuilder {
     if (record.bypass_used) this.layers_fired.add('L3');
   }
 
+  // C3 — append per-policy Bedrock guardrail assessment.
+  addBedrockGuardrailAssessment(record: ListSpansResult): void {
+    this.bedrock_guardrail_assessment.push(record);
+  }
+
+  // C4 — append MCP transport quarantine decision.
+  addMCPTransport(record: MCPTransportRecord): void {
+    this.mcp_transport.push(record);
+  }
+
   getStartedAt(): Date {
     return this.started_at;
   }
@@ -126,6 +153,9 @@ export class ReceiptBuilder {
     if (this.l5_contract) out.l5_contract = this.l5_contract;
     if (this.l6_chaos) out.l6_chaos = this.l6_chaos;
     out.tf_health = this.tf_health;
+    if (this.bedrock_guardrail_assessment.length > 0)
+      out.bedrock_guardrail_assessment = [...this.bedrock_guardrail_assessment];
+    if (this.mcp_transport.length > 0) out.mcp_transport = [...this.mcp_transport];
     return out;
   }
 }

@@ -111,4 +111,34 @@ describe('l4-bedrock-rules — Bedrock-specific error reclassification', () => {
     const match = classifyError(err, 'bedrock/anthropic.claude-3-5-sonnet', ALL_RULES);
     expect(match).toBeNull();
   });
+
+  // C1 — AWS 2026-05-27 endpoint split + token-bucket classification.
+  test('token-bucket throttle on mantle → pass_through (L3 same-vendor backoff, not L4 swap)', () => {
+    const err: ProviderError = {
+      status: 429,
+      type: 'ThrottlingException',
+      raw_message: 'Token bucket exhausted on mantle endpoint; retry after Retry-After seconds.',
+      endpoint_kind: 'mantle',
+      throttle_kind: 'token_bucket',
+      retry_after_s: 8,
+    };
+    const match = classifyError(err, 'bedrock/anthropic.claude-opus-4-7', ALL_RULES);
+    expect(match).not.toBeNull();
+    expect(match?.message_class).toBe('bedrock_token_bucket');
+    expect(match?.action_taken).toBe('pass_through');
+  });
+
+  test('legacy RPM ThrottlingException on runtime still routes to fallback_provider (L4 swap)', () => {
+    // No token-bucket wording → falls through to generic structured rule below it.
+    const err: ProviderError = {
+      status: 429,
+      type: 'ThrottlingException',
+      raw_message: 'Too many requests, please wait before trying again.',
+      endpoint_kind: 'runtime',
+      throttle_kind: 'request_quota',
+    };
+    const match = classifyError(err, 'bedrock/anthropic.claude-3-5-sonnet', ALL_RULES);
+    expect(match?.message_class).toBe('bedrock_throttling');
+    expect(match?.action_taken).toBe('fallback_provider');
+  });
 });

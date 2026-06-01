@@ -19,6 +19,12 @@
 //      → WRITE_TIED.
 //   4. Otherwise: UNKNOWN_TIED.
 
+import {
+  type QuarantineDecision,
+  type QuarantineOptions,
+  quarantineMCPCall,
+} from './transport-quarantine.js';
+
 export type MCPToolClass = 'READ_HEDGE' | 'WRITE_TIED' | 'UNKNOWN_TIED';
 
 export interface MCPToolDef {
@@ -59,6 +65,23 @@ const WRITE_PREFIXES = [
   'move_',
   'rename_',
 ];
+
+// C4 — classify with transport quarantine pre-check. Returns the
+// quarantine decision alongside the existing classification so callers
+// can refuse early and still log the attempt to the Receipt.
+export interface ClassifyWithQuarantineResult {
+  classification: MCPClassification;
+  quarantine: QuarantineDecision;
+}
+
+export function classifyWithQuarantine(
+  tool: MCPToolDef,
+  quarantineOpts: QuarantineOptions,
+): ClassifyWithQuarantineResult {
+  const quarantine = quarantineMCPCall(quarantineOpts);
+  const classification = classifyTool(tool);
+  return { classification, quarantine };
+}
 
 export function classifyTool(tool: MCPToolDef): MCPClassification {
   // 1. Explicit annotation wins.

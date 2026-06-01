@@ -9,6 +9,21 @@
 import type { L4Rule } from './l4-semantic.js';
 
 export const BEDROCK_L4_RULES: L4Rule[] = [
+  // Bedrock token-bucket throttling (AWS 2026-05-27 split). Detected via
+  // the ProviderError.throttle_kind field set by token-quota-detector.ts.
+  // Action `pass_through` here is shorthand for "L3 same-vendor backoff":
+  // we don't swap vendor; we wait Retry-After and retry the same Bedrock
+  // endpoint. The L3 layer reads message_class === 'bedrock_token_bucket'
+  // and performs the backoff. See docs/RECEIPT.md §C1.
+  {
+    id: 'bedrock.token_bucket.structured',
+    matchProvider: '*',
+    matchType: 'ThrottlingException',
+    matchMessage: /token[ -]bucket|tokens?[ -]per[ -]minute|TPM\b/i,
+    messageClass: 'bedrock_token_bucket',
+    action: 'pass_through',
+  },
+
   // Bedrock ThrottlingException — high-volume requests at the model level
   // trigger this; the request itself is well-formed (so default gateways
   // don't fall back).

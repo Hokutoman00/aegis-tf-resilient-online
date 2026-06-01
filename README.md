@@ -2,7 +2,7 @@
 
 [![Hackathon](https://img.shields.io/badge/DevNetwork_AI%2FML_Hackathon-2026-blue)](https://devnetwork-ai-ml-hack-2026.devpost.com/)
 [![Challenge](https://img.shields.io/badge/TrueFoundry-Resilient_Agents-orange)](https://devnetwork-ai-ml-hack-2026.devpost.com/)
-[![Tests](https://img.shields.io/badge/tests-50%20passing-brightgreen)](./tests/unit)
+[![Tests](https://img.shields.io/badge/tests-100%20passing-brightgreen)](./tests/unit)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 > **Hedge first, fallback second, continuously chaos-verified.**
@@ -59,6 +59,31 @@ This single error class (`credit_balance_too_low`) is what brings down most LLM 
 
 All scenarios use [Toxiproxy](https://github.com/Shopify/toxiproxy) to inject *real* network failures, not mocked errors.
 
+## Verify in 5 minutes
+
+Aegis ships **4 stacked improvements** closing gaps documented in the past 30 days. Judges can verify each independently:
+
+| ID | Improvement | Source / date |
+|---|---|---|
+| **C1** | Bedrock `bedrock-runtime` vs `bedrock-mantle` endpoint split + token-bucket vs request-quota throttle classification | AWS Bedrock release 2026-05-27 |
+| **C3** | ListSpans-aware Guardrail Receipt — per-policy assessment embedded on `GuardrailIntervention` | AWS Bedrock release 2026-05-22 |
+| **C4** | MCP STDIO transport quarantine (CVSS 9.8 RCE, April 2026) + TOFU origin pin | CVE disclosure 2026-04, ~200K servers affected |
+| **C6** | AIVS-format signed envelope (Ed25519 + SHA-256 hash chain) — first AgentHack-class submission shipping AIVS compatibility | IETF draft-stone-aivs-00, April 2026 |
+
+```bash
+bun install
+bun test                                # 100 tests, ~1.3s
+bun run examples/bedrock-demo.ts        # end-to-end L4 + Bedrock demo
+bun run examples/verify-receipt.ts <bundle-dir>  # standalone AIVS verifier
+```
+
+The AIVS bundle (`audit_log.jsonl` + `manifest.json` + `session_sig.txt`) is hash-chained and Ed25519-signed. Verify independently in Python — no Aegis trust required:
+
+```bash
+pip install cryptography
+python3 examples/verify.py <bundle-dir>
+```
+
 ## Quick start
 
 ```bash
@@ -92,7 +117,7 @@ point `base_url` at Aegis instead of `api.openai.com`.
 
 ```bash
 bun test
-# 50 tests, 0 fail, ~150 assertions, <1s
+# 100 tests, 0 fail, ~246 assertions, ~1.3s
 ```
 
 Lint / typecheck:

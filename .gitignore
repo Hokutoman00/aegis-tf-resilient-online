@@ -40,3 +40,6 @@ demo/recordings/raw/
 demo/recordings/working/
 *.api-key
 demo/video/out/
+
+# AIVS signing key — NEVER commit (regenerate on fork)
+.aegis/signing-key.json
