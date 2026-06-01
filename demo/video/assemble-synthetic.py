@@ -134,7 +134,7 @@ def make_closing():
     code_lines = [
         "git clone github.com/Hokutoman00/aegis-tf-resilient-online",
         "cd aegis-tf-resilient-online && bun install",
-        "bun test    # 75 pass, 0 fail",
+        "bun test    # 100 pass, 0 fail",
     ]
     for i, line in enumerate(code_lines):
         center_text(d, code_y + i * 50, line, f_mono, GREEN)
