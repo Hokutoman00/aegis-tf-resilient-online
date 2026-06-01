@@ -101,7 +101,7 @@ Model Context Protocol · Toxiproxy · Zod · Biome
 ## Try it out
 
 - **GitHub**: <https://github.com/Hokutoman00/aegis-resilient-agents> (public, CI green)
-- **Demo video**: <https://youtu.be/C_b8N49x9FI> *(3:11, 1080p H.264 + AAC, EN narration, unlisted)*
+- **Demo video**: <https://youtu.be/yF_DQZNU3v0> *(3:51, 1080p H.264 + AAC, EN narration, unlisted — TF Online specific, AIVS receipt verification + Bedrock cross-family fallback)*
 - **One-shot run** (against a local server):
   ```bash
   bun install && bun run dev          # in one shell
