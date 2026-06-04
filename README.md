@@ -1,7 +1,7 @@
 # Aegis — A Resilient AI Agent Runtime
 
-[![Hackathon](https://img.shields.io/badge/DevNetwork_AI%2FML_Hackathon-2026-blue)](https://devnetwork-ai-ml-hack-2026.devpost.com/)
-[![Challenge](https://img.shields.io/badge/TrueFoundry-Resilient_Agents-orange)](https://devnetwork-ai-ml-hack-2026.devpost.com/)
+[![Hackathon](https://img.shields.io/badge/TF_Resilient_Agents-Online_Hackathon_2026-blue)](https://www.builderbase.com/v2/event/resilient-agents-online-hackathon)
+[![Challenge](https://img.shields.io/badge/TrueFoundry-Resilient_Agents_Online-orange)](https://www.builderbase.com/v2/event/resilient-agents-online-hackathon)
 [![Tests](https://img.shields.io/badge/tests-100%20passing-brightgreen)](./tests/unit)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
@@ -148,10 +148,12 @@ bun run lint && bun run typecheck
 
 | Field | Detail |
 |---|---|
-| Hackathon | [DevNetwork AI + ML Hackathon 2026](https://devnetwork-ai-ml-hack-2026.devpost.com/) |
-| Challenge | TrueFoundry "Resilient Agents" ($1,500 + $500/$200 sponsor prize) |
-| Submission deadline | 2026-05-28 PDT 10am |
+| Hackathon | [Resilient Agents - Online Hackathon](https://www.builderbase.com/v2/event/resilient-agents-online-hackathon) |
+| Organizer | TrueFoundry × AWS Bedrock |
+| Submission deadline | 2026-06-08 15:30 |
 | Team | Solo (Hokuto Torigoe) |
+
+> **Note**: This is the TF Online fork, extending [aegis-resilient-agents](https://github.com/Hokutoman00/aegis-resilient-agents) (1st place, DevNetwork AI+ML Hackathon 2026 TrueFoundry track) with AWS Bedrock-native integration (C1/C3/C4/C6 improvements above).
 
 ## Acknowledgments
 
